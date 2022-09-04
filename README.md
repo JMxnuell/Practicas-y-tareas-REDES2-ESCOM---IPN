@@ -1,4 +1,4 @@
-# Repositorio-para-pr-cticas-y-tareas-de-la-meteria-Aplicaciones-para-comunicaciones-en-Red-ESCOM-
+# Repo practicas y tareas REDES2 ESCOM - IPN
 Repositorio para prácticas y tareas de la materia "Repositorio para prácticas y tareas de la meteria  "Aplicaciones para comunicaciones en Red"  ESCOM -IPN
 
 ### Lenguaje
