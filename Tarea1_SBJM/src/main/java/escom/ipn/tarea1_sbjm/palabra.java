@@ -26,13 +26,16 @@ public class palabra {
     };
     
     private String generada;
-    ArrayList<Integer> segmentos = new ArrayList<Integer>();    
+    private ArrayList<Integer> segmentos = new ArrayList<Integer>();    
     public palabra(int dificultad) {
         Random random = new Random();
         generada = palabras[dificultad-1][random.nextInt(10)];
+        System.out.println(generada);
+        segmentar();
     }
 
     private void segmentar(){
+       // System.out.println("segmentando");
     int l = generada.length();
     int t = 0;
         for (int i = 0; i < l; i++) {
@@ -43,5 +46,33 @@ public class palabra {
                 t = 0;
             }
         }
+        //System.out.println("salgo");
+        segmentos.add(t);
     }
+
+    public String getGenerada() {
+        return generada;
+    }
+
+    public ArrayList<Integer> getSegmentos() {
+        return segmentos;
+    }
+    
+   public ArrayList<Integer> encontrados(String letra){
+       char l = letra.charAt(0);
+       ArrayList<Integer> lista = new ArrayList<>();
+       
+       boolean tiene = false;
+       for(int i = 0; i<generada.length(); i++) {
+           if(generada.charAt(i) == l){
+               tiene = true;
+               lista.add(i);
+           }
+       }
+       if(!tiene)
+           lista.add(-1);
+       
+       return lista;
+   }
+    
 }

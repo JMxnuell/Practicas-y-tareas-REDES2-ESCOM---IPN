@@ -20,9 +20,23 @@ public class servidor {
           DataInputStream dis = new DataInputStream(cl.getInputStream());
           
           int dificultad = dis.readInt();
+          
           System.out.println("Se recibio la dificultad: " + dificultad);
-          
-          
+          palabra pGenerada = new palabra(dificultad);
+          ObjectOutputStream oos = new ObjectOutputStream(cl.getOutputStream());
+          oos.writeObject(pGenerada.getSegmentos()); // mandamos el total de segmentos (ya que puede que se tengan espacios)
+          System.out.println("Se mandaron los segmentos de la palabra");
+          BufferedReader br = new BufferedReader(new InputStreamReader(cl.getInputStream()));
+          for(;;){
+              String lRecibida = br.readLine();
+              System.out.println("recibido: " + lRecibida);
+              if(lRecibida == "FINISHED")
+                  break;
+              oos.writeObject(pGenerada.encontrados(lRecibida)); //mandamos los indices en los que se encontraron la letra
+          }
+          dis.close();
+          oos.close(); 
+          cl.close();
       }catch(Exception e){
           e.printStackTrace();
       }  
