@@ -30,8 +30,8 @@ public class cliente extends javax.swing.JFrame{
             ArrayList<Integer> segmentos = (ArrayList<Integer>)ois.readObject(); //leemos los segmentos de la palabra generada
   
             System.out.println("Se recibieron los segmentos: ");
-            for (Integer si: segmentos) {
-                System.out.println(si);
+            for (Integer si: segmentos) { // podemos recibir oraciones y no solo palabras
+                System.out.println(si); // por lo que recibiremos por parte del server numeros de palabras y su longitud
             }
             Juego juegoNuevo = new Juego(segmentos);
             int intentos = 5;
@@ -44,26 +44,32 @@ public class cliente extends javax.swing.JFrame{
                 String letra = br.readLine();
                 pw.println(letra); // mandamos la letra para verificar que se encuentre
                 pw.flush();
-                ArrayList<Integer> posiciones = (ArrayList<Integer>)ois.readObject();
-                if(posiciones.get(0) != -1){
+                ArrayList<Integer> posiciones = (ArrayList<Integer>)ois.readObject(); //recibimos la respuesta del servidor (indices encontrados)
+                if(posiciones.get(0) != -1){ // al recibir -1 significa que no hay indices encontrados con la letra mandada
                     juegoNuevo.update(letra, posiciones);
                     System.out.println("se encontro la letra en la palabra!");
-                    if(juegoNuevo.ganador(posiciones.size())){
+                    if(juegoNuevo.ganador(posiciones.size())){ // revisamos el avance que llevamos en la palabra a adivinar
                         System.out.println("Felicidades, has ganado!!");
                         break;   
                     }
-                }else{
+                }else{ // si no se encontraron indices con dicha palabra
                     System.out.println("No se encontro la letra en la palabra :(");
-                 intentos--;
+                    intentos--;
                  if(intentos == 0){
                      System.out.println("Perdiste, no te quedan mas intentos :( ");
                      break;
                  }
                 }
             }
+            String f = "FINISH";
+            pw.println(f);
+            pw.flush();
             juegoNuevo.tablero();
-            pw.println("FINISHED");
+            BufferedReader brserv = new BufferedReader(new InputStreamReader(cl.getInputStream()));
+            System.out.println("La palabra era: " + brserv.readLine()); //finalmente recibimos la palabra por si no se adivino
+            System.out.println("Juego finalizado");
             ois.close();
+            brserv.close();
             br.close();
             pw.close();
             cl.close();
