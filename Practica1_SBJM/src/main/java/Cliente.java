@@ -1,19 +1,17 @@
 import static escom.deleteFiles.deleteFiles;
 import escom.tree;
-import java.io.BufferedWriter;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.net.Socket;
+import java.nio.file.Files;
 import java.util.Scanner;
-import static javafx.application.Platform.exit;
 import javax.swing.JFileChooser;
-import static javax.swing.JFrame.EXIT_ON_CLOSE;
 
 /**
  *
@@ -36,6 +34,7 @@ public class Cliente {
             DataOutputStream dos = new DataOutputStream(os);
             InputStream is = cl.getInputStream();
             ObjectInputStream ois = new ObjectInputStream(is);
+            ObjectOutputStream oos = new ObjectOutputStream(os);
             do{
                 System.out.println("1. Listar contenido carpeta remota");
                 System.out.println("2. Listar contenido carpeta local");
@@ -102,6 +101,20 @@ public class Cliente {
                     case 4:
                         break;
                     case 5:
+                        File dirRemoto = (File)ois.readObject();//recibimos el directorio remoto
+                        JFileChooser jfRemote = new JFileChooser();
+                        jfRemote.setCurrentDirectory(dirRemoto);
+                        jfRemote.setMultiSelectionEnabled(true);
+                        jfRemote.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+                        int r3  = jfRemote.showOpenDialog(null);
+                        if(r3 ==JFileChooser.APPROVE_OPTION){
+                            File[] fremotes = jfRemote.getSelectedFiles();
+                            dos.writeInt(fremotes.length); //mandamos el total de archivos a eliminar
+                            for (File fremote : fremotes) {
+                               dos.writeUTF(fremote.getAbsolutePath()); //mandamos archivo por archivo
+                            }
+                        }
+                        System.out.println("Se eliminaron correctamente los archivos remotos..."); 
                         break;
                     case 6:
                         int r2 = jf.showOpenDialog(null);
@@ -117,6 +130,7 @@ public class Cliente {
                     case 7:
                         System.out.println("Saliendo...");
                         dos.close();
+                        oos.close();
                         ois.close();
                         cl.close();
                         break;

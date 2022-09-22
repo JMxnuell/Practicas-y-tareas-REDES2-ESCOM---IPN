@@ -44,6 +44,5 @@ public class tree extends JFrame{
         this.setTitle(dir);
         this.setSize(200,200);
         this.setVisible(true);
-    }
-    
+    }   
 }

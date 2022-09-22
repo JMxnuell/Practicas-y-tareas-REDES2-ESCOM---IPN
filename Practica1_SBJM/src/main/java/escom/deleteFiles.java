@@ -14,6 +14,9 @@ import java.nio.file.Paths;
  */
 public class deleteFiles {
     public static void deleteFiles(File f) throws IOException {
+      if(f.isFile())
+          f.delete();
+      else{
       File fL[] = f.listFiles();
       for(File file : fL) {
          if(file.isFile()) {
@@ -23,5 +26,6 @@ public class deleteFiles {
          }
       }
       f.delete();
+   }
    }
 }

@@ -1,16 +1,17 @@
 
+import static escom.deleteFiles.deleteFiles;
 import escom.tree;
-import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import javax.swing.JFileChooser;
 
 /*
  *
@@ -28,7 +29,6 @@ public class Servidor {
             tree tremoto = new tree(fremoto);
             File f = new File("");
             String ruta = f.getAbsolutePath()+"\\src\\cRemota\\";
-            System.out.println(ruta);
         for(;;){
             System.out.println("Esperando cliente...");
             Socket cl = s.accept();
@@ -37,15 +37,22 @@ public class Servidor {
             DataInputStream dis = new DataInputStream(is);
             OutputStream os = cl.getOutputStream();
             ObjectOutputStream oos = new ObjectOutputStream(os);
+            ObjectInputStream ois = new ObjectInputStream(is);
+            
             int opc;
             do{ //mientras la opcion no sea salir
                 opc = dis.readInt(); //leemos la opción escogida desde el cliente
+                JFileChooser jf = new JFileChooser(); //cargamos el jfilechooser del directorio
+                File workingDirectory = new File(System.getProperty("user.dir")+ "/src/cRemota");
+                jf.setCurrentDirectory(workingDirectory);
+                jf.setMultiSelectionEnabled(true);
+                jf.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
                 switch(opc){
-                    case 1:
+                    case 1: //listar contenido
                          oos.writeObject(tremoto); // mandamos nuestro jTree para que sea visualizado desde el cliente
                          oos.flush();
                         break;
-                    case 3:
+                    case 3: //cargar archivos a la carpeta remota
                          int nArch = dis.readInt();
                          for(int i = 0; i<nArch; i++) {
                             Socket cl2 = s.accept();
@@ -74,10 +81,21 @@ public class Servidor {
                             cl2.close();
                         }
                         break;
-                    case 4:
+                    case 4: //descargar archivos
                         break;
-                    case 5:
+                    case 5: //eliminar archivos/carpetas remotas
+                        oos.writeObject(workingDirectory); // mandamos nuestro directorio remoto para que se escojan las carpetas a eliminar
+                        oos.flush();
+                        int t = dis.readInt(); //total de archivos a eliminar
+                       // System.out.println("total: " + t);
+                        for (int i = 0; i<t; i++) {
+                            String str = dis.readUTF();
+                            deleteFiles(new File(str));
+                        }
+                        System.out.println("Se eliminaron correctamente los archivos...");
+                        tremoto = new tree(fremoto);
                         break;
+
                     case 7:
                         System.out.println("Cerrando cliente...");
                         oos.close();
