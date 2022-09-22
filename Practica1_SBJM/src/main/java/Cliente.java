@@ -11,6 +11,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.util.Scanner;
+import static javafx.application.Platform.exit;
 import javax.swing.JFileChooser;
 import static javax.swing.JFrame.EXIT_ON_CLOSE;
 
@@ -123,6 +124,8 @@ public class Cliente {
                         break;
                 }
             }while(opc != 7);
+            System.out.println("exit");
+            System.exit(0);
         } catch (Exception e) {
         }
     }
