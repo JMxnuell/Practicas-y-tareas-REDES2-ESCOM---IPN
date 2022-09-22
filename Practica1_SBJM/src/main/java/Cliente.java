@@ -1,3 +1,4 @@
+import static escom.deleteFiles.deleteFiles;
 import escom.tree;
 import java.io.BufferedWriter;
 import java.io.DataInputStream;
@@ -47,6 +48,11 @@ public class Cliente {
                 opc = sc.nextInt();
                 dos.writeInt(opc); // mandamos la opcion al servidor
                 dos.flush();
+                JFileChooser jf = new JFileChooser();
+                File workingDirectory = new File(System.getProperty("user.dir")+ "/src/cLocal");
+                jf.setCurrentDirectory(workingDirectory);
+                jf.setMultiSelectionEnabled(true);
+                jf.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
                 switch(opc){
                     case 1:
                         tree tremoto = (tree) ois.readObject();
@@ -56,11 +62,6 @@ public class Cliente {
                         tLocal.visualizar("Directorio local");
                         break;
                     case 3:
-                         JFileChooser jf = new JFileChooser();
-                         File workingDirectory = new File(System.getProperty("user.dir")+ "/src/cLocal");
-                         jf.setCurrentDirectory(workingDirectory);
-                         jf.setMultiSelectionEnabled(true);
-                         jf.setFileSelectionMode(JFileChooser.FILES_ONLY);
                          int r = jf.showOpenDialog(null);
                          if(r==JFileChooser.APPROVE_OPTION) {
                             File[] f2 = jf.getSelectedFiles();
@@ -102,6 +103,15 @@ public class Cliente {
                     case 5:
                         break;
                     case 6:
+                        int r2 = jf.showOpenDialog(null);
+                        if(r2 == JFileChooser.APPROVE_OPTION) {
+                            File[] f2 = jf.getSelectedFiles();
+                            for (int i = 0; i < f2.length; ++i) {
+                               deleteFiles(f2[i]); //eliminamos de forma recursiva por si se encuentran carpetas
+                            }
+                        }
+                        //actualizamos el jtree local
+                        tLocal = new tree(flocal);
                         break;
                     case 7:
                         System.out.println("Saliendo...");

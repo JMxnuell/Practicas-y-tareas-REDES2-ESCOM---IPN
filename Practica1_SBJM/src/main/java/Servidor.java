@@ -67,6 +67,8 @@ public class Servidor {
                                 System.out.println("\rRecibido el " + porcentaje + " % del archivo");
                             }//while
                             System.out.println("Archivo recibido..");
+                            tremoto = new tree(fremoto);
+                            System.out.println("Jtree actualizado..");
                             dos.close();
                             dis2.close();
                             cl2.close();
@@ -78,6 +80,7 @@ public class Servidor {
                         break;
                     case 7:
                         System.out.println("Cerrando cliente...");
+                        break;
                 }
             }while(opc != 7);
             oos.close();

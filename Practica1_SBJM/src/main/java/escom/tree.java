@@ -13,10 +13,11 @@ import javax.swing.tree.DefaultTreeCellRenderer;
  */
 public class tree extends JFrame{
     private JTree contenido;
+    DefaultMutableTreeNode top1;
     public tree(File file){
-        DefaultMutableTreeNode top = new DefaultMutableTreeNode(file.getName());
-        cargarFiles(top, file); // es necesario cargar los archivos y directorios de forma recursiva
-        contenido = new JTree(top);
+        top1 = new DefaultMutableTreeNode(file.getName());
+        cargarFiles(top1, file); // es necesario cargar los archivos y directorios de forma recursiva
+        contenido = new JTree(top1);
         JScrollPane treeView = new JScrollPane(contenido);
         DefaultTreeCellRenderer renderer = new DefaultTreeCellRenderer();
         contenido.setCellRenderer(renderer);
@@ -37,7 +38,7 @@ public class tree extends JFrame{
             }
         }
     }
-    
+ 
     public void visualizar(String dir){
         
         this.setTitle(dir);
