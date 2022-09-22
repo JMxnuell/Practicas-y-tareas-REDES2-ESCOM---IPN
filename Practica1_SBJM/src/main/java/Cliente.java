@@ -115,16 +115,14 @@ public class Cliente {
                         break;
                     case 7:
                         System.out.println("Saliendo...");
+                        dos.close();
+                        ois.close();
+                        cl.close();
                         break;
                     default:
-                        System.out.println("Opcion no valida...");
                         break;
                 }
             }while(opc != 7);
-            System.out.println("Cerrando sesión...");
-            dos.close();
-            ois.close();
-            cl.close();
         } catch (Exception e) {
         }
     }

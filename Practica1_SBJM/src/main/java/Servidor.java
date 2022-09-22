@@ -80,12 +80,14 @@ public class Servidor {
                         break;
                     case 7:
                         System.out.println("Cerrando cliente...");
+                        oos.close();
+                        dis.close();
+                        cl.close();
+                        break;
+                    default:
                         break;
                 }
             }while(opc != 7);
-            oos.close();
-            dis.close();
-            cl.close();
         }
         } catch (Exception e) {
             e.printStackTrace();
