@@ -1,7 +1,16 @@
 import escom.tree;
+import java.io.BufferedWriter;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.util.Scanner;
+import javax.swing.JFileChooser;
 import static javax.swing.JFrame.EXIT_ON_CLOSE;
 
 /**
@@ -21,26 +30,72 @@ public class Cliente {
             // Cargamos el directorio local en un JTree
             File flocal = new File("src/cLocal");
             tree tLocal = new tree(flocal);
-            
+            OutputStream os = cl.getOutputStream();
+            DataOutputStream dos = new DataOutputStream(os);
+            InputStream is = cl.getInputStream();
+            ObjectInputStream ois = new ObjectInputStream(is);
             do{
-                System.out.println("1. Listar contendigo carpeta remota");
-                System.out.println("2. Listar contendigo carpeta local");
+                System.out.println("1. Listar contenido carpeta remota");
+                System.out.println("2. Listar contenido carpeta local");
                 System.out.println("3. Subir archivos/carpetas");
                 System.out.println("4. Descargar archivos/carpetas");
                 System.out.println("5. Eliminar archivos/carpetas remotas");
                 System.out.println("6. Eliminar archivos/carpetas locales");
                 System.out.println("7. Salir");
-                
+                System.out.println("Opcion: ");
                 Scanner sc = new Scanner(System.in);
                 opc = sc.nextInt();
-                
+                dos.writeInt(opc); // mandamos la opcion al servidor
+                dos.flush();
                 switch(opc){
                     case 1:
+                        tree tremoto = (tree) ois.readObject();
+                        tremoto.visualizar("Directorio remoto");
                         break;
                     case 2:
-                        tLocal.visualizar();
+                        tLocal.visualizar("Directorio local");
                         break;
                     case 3:
+                         JFileChooser jf = new JFileChooser();
+                         File workingDirectory = new File(System.getProperty("user.dir")+ "/src/cLocal");
+                         jf.setCurrentDirectory(workingDirectory);
+                         jf.setMultiSelectionEnabled(true);
+                         jf.setFileSelectionMode(JFileChooser.FILES_ONLY);
+                         int r = jf.showOpenDialog(null);
+                         if(r==JFileChooser.APPROVE_OPTION) {
+                            File[] f2 = jf.getSelectedFiles();
+                            dos.writeInt(f2.length);
+                            dos.flush();
+                            for (int i = 0; i < f2.length; ++i) {
+                                Socket cl2 = new Socket( "127.0.0.2",pto);
+                                String nombre = f2[i].getName();
+                                String path = f2[i].getAbsolutePath();
+                                long tam = f2[i].length();
+                                System.out.println("Preparandose pare enviar archivo " + path + " de " + tam + " bytes\n\n");
+                                DataOutputStream dos2 = new DataOutputStream(cl2.getOutputStream());
+                                DataInputStream dis = new DataInputStream(new FileInputStream(path));
+                                dos.writeUTF(nombre);
+                                dos.flush();
+                                dos.writeLong(tam);
+                                dos.flush();
+                                long enviados = 0;
+                                int l = 0, porcentaje = 0;
+                                while (enviados < tam) {
+                                    byte[] b = new byte[1500];
+                                    l = dis.read(b);
+                                    System.out.println("enviados: " + l);
+                                    dos2.write(b, 0, l);
+                                    dos2.flush();
+                                    enviados = enviados + l;
+                                    porcentaje = (int) ((enviados * 100) / tam);
+                                    System.out.print("\rEnviado el " + porcentaje + " % del archivo");
+                                }//while
+                                System.out.println("\nArchivo enviado..");
+                                dos2.close();
+                                dis.close();
+                                cl2.close();
+                            }
+                        }
                         break;
                     case 4:
                         break;
@@ -49,13 +104,16 @@ public class Cliente {
                     case 6:
                         break;
                     case 7:
+                        System.out.println("Saliendo...");
                         break;
                     default:
                         System.out.println("Opcion no valida...");
                         break;
                 }
             }while(opc != 7);
-            
+            System.out.println("Cerrando sesión...");
+            dos.close();
+            ois.close();
             cl.close();
         } catch (Exception e) {
         }

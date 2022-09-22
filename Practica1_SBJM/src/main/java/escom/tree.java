@@ -5,6 +5,7 @@ import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeCellRenderer;
 
 /**
  *
@@ -13,10 +14,13 @@ import javax.swing.tree.DefaultMutableTreeNode;
 public class tree extends JFrame{
     private JTree contenido;
     public tree(File file){
-        DefaultMutableTreeNode top = new DefaultMutableTreeNode("cLocal");
+        DefaultMutableTreeNode top = new DefaultMutableTreeNode(file.getName());
         cargarFiles(top, file); // es necesario cargar los archivos y directorios de forma recursiva
         contenido = new JTree(top);
         JScrollPane treeView = new JScrollPane(contenido);
+        DefaultTreeCellRenderer renderer = new DefaultTreeCellRenderer();
+        contenido.setCellRenderer(renderer);
+        contenido.setShowsRootHandles(true);
         add(treeView);
     }
     
@@ -34,10 +38,10 @@ public class tree extends JFrame{
         }
     }
     
-    public void visualizar(){
-        this.setTitle("Directorio local");
+    public void visualizar(String dir){
+        
+        this.setTitle(dir);
         this.setSize(200,200);
-        this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         this.setVisible(true);
     }
     
